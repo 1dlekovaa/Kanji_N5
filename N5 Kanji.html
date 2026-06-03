@@ -1,0 +1,1803 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Kanji N5 — Hafalan</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;700&family=DM+Sans:wght@300;400;500&family=DM+Serif+Display&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      :root {
+        --bg: #f5f2eb;
+        --bg2: #ede9e0;
+        --bg3: #e5e0d5;
+        --surface: #faf8f3;
+        --surface2: #f0ece3;
+        --ink: #1a1714;
+        --ink2: #5a5550;
+        --ink3: #8a847c;
+        --accent: #b5451b;
+        --accent2: #d4652e;
+        --accent-light: #fbe8e0;
+        --gold: #c9943a;
+        --gold-light: #fdf3e0;
+        --green: #2d6a4f;
+        --green-light: #d8f0e5;
+        --border: rgba(90, 85, 80, 0.15);
+        --border2: rgba(90, 85, 80, 0.25);
+        --radius: 12px;
+        --radius-lg: 18px;
+        --shadow: 0 2px 16px rgba(26, 23, 20, 0.08);
+        --shadow-lg: 0 8px 40px rgba(26, 23, 20, 0.14);
+      }
+
+      body {
+        font-family: "DM Sans", sans-serif;
+        background: var(--bg);
+        color: var(--ink);
+        min-height: 100vh;
+        overflow-x: hidden;
+      }
+
+      .grain {
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        z-index: 999;
+        opacity: 0.03;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
+      }
+
+      header {
+        padding: 2rem 2rem 0;
+        max-width: 960px;
+        margin: 0 auto;
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 1rem;
+      }
+
+      .logo {
+        display: flex;
+        align-items: baseline;
+        gap: 10px;
+      }
+      .logo-kanji {
+        font-family: "Noto Serif JP", serif;
+        font-size: 2.4rem;
+        color: var(--accent);
+        line-height: 1;
+      }
+      .logo-text {
+        font-family: "DM Serif Display", serif;
+        font-size: 1.3rem;
+        color: var(--ink2);
+        letter-spacing: 0.02em;
+      }
+
+      .stats-bar {
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+        flex-wrap: wrap;
+      }
+      .stat-chip {
+        background: var(--surface);
+        border: 0.5px solid var(--border2);
+        border-radius: 100px;
+        padding: 6px 14px;
+        font-size: 13px;
+        color: var(--ink2);
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .stat-chip strong {
+        color: var(--ink);
+        font-weight: 500;
+      }
+      .stat-chip.mastered {
+        background: var(--green-light);
+        border-color: rgba(45, 106, 79, 0.3);
+        color: var(--green);
+      }
+      .stat-chip.mastered strong {
+        color: var(--green);
+      }
+
+      nav {
+        max-width: 960px;
+        margin: 1.5rem auto 0;
+        padding: 0 2rem;
+        display: flex;
+        gap: 4px;
+        border-bottom: 1px solid var(--border);
+      }
+      .tab {
+        padding: 10px 18px;
+        font-size: 14px;
+        font-weight: 500;
+        color: var(--ink3);
+        cursor: pointer;
+        border: none;
+        background: none;
+        border-bottom: 2px solid transparent;
+        margin-bottom: -1px;
+        transition:
+          color 0.2s,
+          border-color 0.2s;
+        letter-spacing: 0.01em;
+      }
+      .tab:hover {
+        color: var(--ink);
+      }
+      .tab.active {
+        color: var(--accent);
+        border-bottom-color: var(--accent);
+      }
+
+      main {
+        max-width: 960px;
+        margin: 0 auto;
+        padding: 2rem;
+      }
+
+      .section {
+        display: none;
+      }
+      .section.active {
+        display: block;
+      }
+
+      /* ───── FLASHCARD ───── */
+      .flashcard-wrap {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1.5rem;
+      }
+
+      .progress-bar-wrap {
+        width: 100%;
+        max-width: 480px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .progress-track {
+        flex: 1;
+        height: 4px;
+        background: var(--bg3);
+        border-radius: 99px;
+        overflow: hidden;
+      }
+      .progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, var(--accent), var(--gold));
+        border-radius: 99px;
+        transition: width 0.4s ease;
+      }
+      .progress-label {
+        font-size: 12px;
+        color: var(--ink3);
+        min-width: 48px;
+        text-align: right;
+      }
+
+      .card-scene {
+        width: 100%;
+        max-width: 480px;
+        perspective: 1200px;
+        cursor: pointer;
+      }
+      .card-inner {
+        width: 100%;
+        min-height: 300px;
+        position: relative;
+        transform-style: preserve-3d;
+        transition: transform 0.55s cubic-bezier(0.4, 0.2, 0.2, 1);
+      }
+      .card-inner.flipped {
+        transform: rotateY(180deg);
+      }
+
+      .card-face {
+        position: absolute;
+        inset: 0;
+        backface-visibility: hidden;
+        background: var(--surface);
+        border: 0.5px solid var(--border2);
+        border-radius: var(--radius-lg);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 0.75rem;
+        padding: 2.5rem;
+        box-shadow: var(--shadow-lg);
+      }
+      .card-back {
+        transform: rotateY(180deg);
+      }
+
+      .card-kanji {
+        font-family: "Noto Serif JP", serif;
+        font-size: 6rem;
+        color: var(--ink);
+        line-height: 1;
+        user-select: none;
+      }
+      .card-hint {
+        font-size: 12px;
+        color: var(--ink3);
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        margin-top: 0.5rem;
+      }
+      .card-reading {
+        font-family: "Noto Serif JP", serif;
+        font-size: 1.6rem;
+        color: var(--accent);
+        font-weight: 400;
+      }
+      .card-meaning {
+        font-family: "DM Serif Display", serif;
+        font-size: 1.8rem;
+        color: var(--ink);
+      }
+      .card-examples {
+        font-size: 13px;
+        color: var(--ink2);
+        text-align: center;
+        line-height: 1.8;
+        border-top: 0.5px solid var(--border);
+        padding-top: 1rem;
+        width: 100%;
+        margin-top: 0.25rem;
+      }
+      .card-examples span {
+        font-family: "Noto Serif JP", serif;
+        color: var(--accent);
+      }
+      .card-category-badge {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        background: var(--accent-light);
+        color: var(--accent);
+        font-size: 11px;
+        font-weight: 500;
+        padding: 4px 10px;
+        border-radius: 99px;
+        letter-spacing: 0.05em;
+      }
+
+      .card-actions {
+        display: flex;
+        gap: 0.75rem;
+        width: 100%;
+        max-width: 480px;
+      }
+      .btn {
+        flex: 1;
+        padding: 12px;
+        border: 0.5px solid var(--border2);
+        border-radius: var(--radius);
+        background: var(--surface);
+        color: var(--ink2);
+        font-family: "DM Sans", sans-serif;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        transition:
+          background 0.15s,
+          color 0.15s,
+          border-color 0.15s,
+          transform 0.1s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+      }
+      .btn:active {
+        transform: scale(0.97);
+      }
+      .btn:hover {
+        background: var(--bg3);
+      }
+      .btn.btn-mastered {
+        background: var(--green-light);
+        color: var(--green);
+        border-color: rgba(45, 106, 79, 0.3);
+      }
+      .btn.btn-mastered:hover {
+        background: #c5e8d6;
+      }
+      .btn.btn-skip {
+      }
+      .btn.btn-primary {
+        background: var(--accent);
+        color: #fff;
+        border-color: var(--accent);
+      }
+      .btn.btn-primary:hover {
+        background: var(--accent2);
+      }
+
+      .nav-row {
+        display: flex;
+        gap: 0.75rem;
+        width: 100%;
+        max-width: 480px;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .btn-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        border: 0.5px solid var(--border2);
+        background: var(--surface);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+        color: var(--ink2);
+        transition: background 0.15s;
+      }
+      .btn-icon:hover {
+        background: var(--bg3);
+      }
+
+      .filter-row {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-bottom: 1.5rem;
+      }
+      .filter-btn {
+        padding: 6px 14px;
+        border-radius: 99px;
+        border: 0.5px solid var(--border2);
+        background: var(--surface);
+        font-size: 13px;
+        color: var(--ink2);
+        cursor: pointer;
+        transition:
+          background 0.15s,
+          color 0.15s;
+      }
+      .filter-btn.active {
+        background: var(--accent);
+        color: #fff;
+        border-color: var(--accent);
+      }
+      .filter-btn:hover:not(.active) {
+        background: var(--bg3);
+      }
+
+      /* ───── DAFTAR / LIST ───── */
+      .search-wrap {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 1.5rem;
+      }
+      .search-input {
+        flex: 1;
+        padding: 10px 16px;
+        border: 0.5px solid var(--border2);
+        border-radius: var(--radius);
+        background: var(--surface);
+        font-family: "DM Sans", sans-serif;
+        font-size: 14px;
+        color: var(--ink);
+        outline: none;
+        transition: border-color 0.2s;
+      }
+      .search-input:focus {
+        border-color: var(--accent);
+      }
+      .search-input::placeholder {
+        color: var(--ink3);
+      }
+
+      .kanji-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+        gap: 12px;
+      }
+      .kanji-card {
+        background: var(--surface);
+        border: 0.5px solid var(--border);
+        border-radius: var(--radius);
+        padding: 1rem;
+        cursor: pointer;
+        transition:
+          border-color 0.2s,
+          transform 0.15s,
+          box-shadow 0.2s;
+        text-align: center;
+        position: relative;
+      }
+      .kanji-card:hover {
+        border-color: var(--accent);
+        transform: translateY(-2px);
+        box-shadow: var(--shadow);
+      }
+      .kanji-card.mastered {
+        background: var(--green-light);
+        border-color: rgba(45, 106, 79, 0.25);
+      }
+      .kanji-card .kj {
+        font-family: "Noto Serif JP", serif;
+        font-size: 2.5rem;
+        color: var(--ink);
+        line-height: 1;
+        margin-bottom: 8px;
+      }
+      .kanji-card .km {
+        font-size: 12px;
+        color: var(--ink2);
+        font-weight: 500;
+        margin-bottom: 4px;
+      }
+      .kanji-card .kr {
+        font-family: "Noto Serif JP", serif;
+        font-size: 11px;
+        color: var(--ink3);
+      }
+      .kanji-card .mastered-dot {
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--green);
+      }
+
+      /* ───── KUIS ───── */
+      .quiz-wrap {
+        max-width: 560px;
+        margin: 0 auto;
+      }
+      .quiz-score-bar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+      }
+      .quiz-score-bar .score {
+        font-size: 14px;
+        color: var(--ink2);
+      }
+      .quiz-score-bar .streak {
+        background: var(--gold-light);
+        color: var(--gold);
+        font-size: 13px;
+        font-weight: 500;
+        padding: 4px 12px;
+        border-radius: 99px;
+      }
+
+      .quiz-question {
+        background: var(--surface);
+        border: 0.5px solid var(--border2);
+        border-radius: var(--radius-lg);
+        padding: 3rem 2rem;
+        text-align: center;
+        margin-bottom: 1.5rem;
+        box-shadow: var(--shadow);
+      }
+      .quiz-kanji {
+        font-family: "Noto Serif JP", serif;
+        font-size: 5rem;
+        color: var(--ink);
+      }
+      .quiz-type {
+        font-size: 12px;
+        color: var(--ink3);
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        margin-top: 1rem;
+      }
+
+      .quiz-options {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+        margin-bottom: 1.5rem;
+      }
+      .quiz-option {
+        background: var(--surface);
+        border: 0.5px solid var(--border2);
+        border-radius: var(--radius);
+        padding: 14px;
+        font-size: 14px;
+        font-weight: 500;
+        color: var(--ink);
+        cursor: pointer;
+        transition:
+          background 0.15s,
+          border-color 0.15s,
+          transform 0.1s;
+        text-align: center;
+      }
+      .quiz-option:hover:not(:disabled) {
+        background: var(--bg3);
+        border-color: var(--border2);
+      }
+      .quiz-option:disabled {
+        cursor: default;
+      }
+      .quiz-option.correct {
+        background: var(--green-light) !important;
+        border-color: var(--green) !important;
+        color: var(--green) !important;
+      }
+      .quiz-option.wrong {
+        background: #fde8e8 !important;
+        border-color: #e24b4a !important;
+        color: #a32d2d !important;
+      }
+      .quiz-option:active:not(:disabled) {
+        transform: scale(0.98);
+      }
+
+      .quiz-feedback {
+        text-align: center;
+        min-height: 32px;
+        font-size: 15px;
+        font-weight: 500;
+        margin-bottom: 1rem;
+      }
+      .quiz-feedback.ok {
+        color: var(--green);
+      }
+      .quiz-feedback.err {
+        color: #a32d2d;
+      }
+
+      /* ───── PROGRESS ───── */
+      .progress-section {
+        max-width: 680px;
+      }
+      .progress-header {
+        margin-bottom: 2rem;
+      }
+      .progress-header h2 {
+        font-family: "DM Serif Display", serif;
+        font-size: 1.6rem;
+        margin-bottom: 0.25rem;
+      }
+      .progress-header p {
+        font-size: 14px;
+        color: var(--ink2);
+      }
+
+      .big-stat-row {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+        gap: 12px;
+        margin-bottom: 2rem;
+      }
+      .big-stat {
+        background: var(--surface);
+        border: 0.5px solid var(--border);
+        border-radius: var(--radius);
+        padding: 1.25rem 1rem;
+        text-align: center;
+      }
+      .big-stat .val {
+        font-family: "DM Serif Display", serif;
+        font-size: 2.2rem;
+        color: var(--ink);
+        line-height: 1;
+      }
+      .big-stat .lbl {
+        font-size: 12px;
+        color: var(--ink3);
+        margin-top: 6px;
+        letter-spacing: 0.03em;
+      }
+
+      .category-progress {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+      .cat-row {
+        background: var(--surface);
+        border: 0.5px solid var(--border);
+        border-radius: var(--radius);
+        padding: 1rem 1.25rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+      }
+      .cat-name {
+        font-size: 14px;
+        font-weight: 500;
+        min-width: 100px;
+      }
+      .cat-bar-wrap {
+        flex: 1;
+        height: 6px;
+        background: var(--bg3);
+        border-radius: 99px;
+        overflow: hidden;
+      }
+      .cat-bar {
+        height: 100%;
+        background: linear-gradient(90deg, var(--accent), var(--gold));
+        border-radius: 99px;
+        transition: width 0.6s ease;
+      }
+      .cat-pct {
+        font-size: 13px;
+        color: var(--ink2);
+        min-width: 40px;
+        text-align: right;
+      }
+
+      .reset-btn {
+        margin-top: 2rem;
+        background: none;
+        border: 0.5px solid var(--border2);
+        color: var(--ink3);
+        padding: 10px 20px;
+        border-radius: var(--radius);
+        font-size: 13px;
+        cursor: pointer;
+        transition:
+          color 0.15s,
+          border-color 0.15s;
+      }
+      .reset-btn:hover {
+        color: #a32d2d;
+        border-color: #a32d2d;
+      }
+
+      .empty-state {
+        text-align: center;
+        padding: 4rem 1rem;
+        color: var(--ink3);
+      }
+      .empty-state p {
+        font-size: 14px;
+        margin-top: 0.5rem;
+      }
+
+      @media (max-width: 560px) {
+        main {
+          padding: 1.25rem;
+        }
+        header {
+          padding: 1.25rem 1.25rem 0;
+        }
+        nav {
+          padding: 0 1.25rem;
+        }
+        .card-kanji {
+          font-size: 4.5rem;
+        }
+        .quiz-options {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="grain"></div>
+
+    <header>
+      <div class="logo">
+        <span class="logo-kanji">漢字</span>
+        <span class="logo-text">N5 · Hafalan</span>
+      </div>
+      <div class="stats-bar">
+        <div class="stat-chip">
+          <strong id="hdr-total">0</strong> / 80 kanji
+        </div>
+        <div class="stat-chip mastered">
+          ✓ <strong id="hdr-mastered">0</strong> dikuasai
+        </div>
+      </div>
+    </header>
+
+    <nav>
+      <button class="tab active" data-tab="flash">Flashcard</button>
+      <button class="tab" data-tab="list">Daftar</button>
+      <button class="tab" data-tab="quiz">Kuis</button>
+      <button class="tab" data-tab="progress">Progress</button>
+    </nav>
+
+    <main>
+      <!-- ═══ FLASHCARD ═══ -->
+      <section class="section active" id="sec-flash">
+        <div class="flashcard-wrap">
+          <div class="filter-row" id="fc-filters">
+            <button class="filter-btn active" data-cat="all">Semua</button>
+            <button class="filter-btn" data-cat="Angka">Angka</button>
+            <button class="filter-btn" data-cat="Alam">Alam</button>
+            <button class="filter-btn" data-cat="Orang">Orang</button>
+            <button class="filter-btn" data-cat="Tempat">Tempat</button>
+            <button class="filter-btn" data-cat="Waktu">Waktu</button>
+            <button class="filter-btn" data-cat="Kata Sifat">Kata Sifat</button>
+            <button class="filter-btn" data-cat="Lainnya">Lainnya</button>
+          </div>
+
+          <div class="progress-bar-wrap">
+            <div class="progress-track">
+              <div
+                class="progress-fill"
+                id="fc-progress"
+                style="width: 0%"
+              ></div>
+            </div>
+            <span class="progress-label" id="fc-counter">0 / 0</span>
+          </div>
+
+          <div class="card-scene" id="card-scene" onclick="flipCard()">
+            <div class="card-inner" id="card-inner">
+              <div class="card-face card-front">
+                <div class="card-category-badge" id="cf-cat"></div>
+                <div class="card-kanji" id="cf-kanji">？</div>
+                <div class="card-hint">Ketuk untuk lihat arti</div>
+              </div>
+              <div class="card-face card-back">
+                <div class="card-category-badge" id="cb-cat"></div>
+                <div class="card-reading" id="cb-reading"></div>
+                <div class="card-meaning" id="cb-meaning"></div>
+                <div class="card-examples" id="cb-examples"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card-actions">
+            <button class="btn btn-skip" onclick="nextCard()">↓ Lewati</button>
+            <button class="btn btn-mastered" onclick="markMastered()">
+              ✓ Kuasai
+            </button>
+          </div>
+
+          <div class="nav-row">
+            <button class="btn-icon" onclick="prevCard()" title="Sebelumnya">
+              ←
+            </button>
+            <span style="font-size: 13px; color: var(--ink3)" id="fc-idx"
+              >1</span
+            >
+            <button class="btn-icon" onclick="nextCard()" title="Selanjutnya">
+              →
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══ DAFTAR ═══ -->
+      <section class="section" id="sec-list">
+        <div class="search-wrap">
+          <input
+            class="search-input"
+            id="search-input"
+            type="text"
+            placeholder="Cari kanji, arti, atau bacaan…"
+            oninput="renderList()"
+          />
+        </div>
+        <div class="filter-row" id="list-filters">
+          <button class="filter-btn active" data-cat="all">Semua</button>
+          <button class="filter-btn" data-cat="Angka">Angka</button>
+          <button class="filter-btn" data-cat="Alam">Alam</button>
+          <button class="filter-btn" data-cat="Orang">Orang</button>
+          <button class="filter-btn" data-cat="Tempat">Tempat</button>
+          <button class="filter-btn" data-cat="Waktu">Waktu</button>
+          <button class="filter-btn" data-cat="Kata Sifat">Kata Sifat</button>
+          <button class="filter-btn" data-cat="Lainnya">Lainnya</button>
+          <button class="filter-btn" data-cat="mastered">✓ Dikuasai</button>
+        </div>
+        <div class="kanji-grid" id="kanji-grid"></div>
+      </section>
+
+      <!-- ═══ KUIS ═══ -->
+      <section class="section" id="sec-quiz">
+        <div class="quiz-wrap">
+          <div class="quiz-score-bar">
+            <span class="score"
+              >Skor: <strong id="q-score">0</strong> /
+              <strong id="q-total">0</strong></span
+            >
+            <span class="streak" id="q-streak">🔥 0 streak</span>
+          </div>
+          <div class="quiz-question">
+            <div class="quiz-kanji" id="q-kanji">？</div>
+            <div class="quiz-type" id="q-type">Pilih arti yang benar</div>
+          </div>
+          <div class="quiz-options" id="q-options"></div>
+          <div class="quiz-feedback" id="q-feedback"></div>
+          <button
+            class="btn btn-primary"
+            id="q-next-btn"
+            onclick="nextQuestion()"
+            style="display: none; width: 100%"
+          >
+            Lanjut →
+          </button>
+          <div style="text-align: center; margin-top: 1rem">
+            <button class="filter-btn" onclick="resetQuiz()">
+              ↺ Mulai ulang kuis
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══ PROGRESS ═══ -->
+      <section class="section" id="sec-progress">
+        <div class="progress-section">
+          <div class="progress-header">
+            <h2>Progres Belajar</h2>
+            <p>Pantau kanji mana yang sudah kamu kuasai</p>
+          </div>
+          <div class="big-stat-row">
+            <div class="big-stat">
+              <div class="val" id="ps-total">0</div>
+              <div class="lbl">Total kanji</div>
+            </div>
+            <div class="big-stat">
+              <div class="val" id="ps-mastered">0</div>
+              <div class="lbl">Dikuasai</div>
+            </div>
+            <div class="big-stat">
+              <div class="val" id="ps-pct">0%</div>
+              <div class="lbl">Selesai</div>
+            </div>
+            <div class="big-stat">
+              <div class="val" id="ps-streak">0</div>
+              <div class="lbl">Best streak</div>
+            </div>
+          </div>
+          <div class="category-progress" id="cat-progress"></div>
+          <button class="reset-btn" onclick="confirmReset()">
+            Reset semua progres
+          </button>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      const KANJI_DATA = [
+        // Angka
+        {
+          k: "一",
+          r: "いち / ichi",
+          m: "Satu",
+          cat: "Angka",
+          ex: "一つ (hitotsu) — satu buah",
+        },
+        {
+          k: "二",
+          r: "に / ni",
+          m: "Dua",
+          cat: "Angka",
+          ex: "二つ (futatsu) — dua buah",
+        },
+        {
+          k: "三",
+          r: "さん / san",
+          m: "Tiga",
+          cat: "Angka",
+          ex: "三月 (sangatsu) — Maret",
+        },
+        {
+          k: "四",
+          r: "し・よん / shi, yon",
+          m: "Empat",
+          cat: "Angka",
+          ex: "四月 (shigatsu) — April",
+        },
+        {
+          k: "五",
+          r: "ご / go",
+          m: "Lima",
+          cat: "Angka",
+          ex: "五時 (goji) — pukul 5",
+        },
+        {
+          k: "六",
+          r: "ろく / roku",
+          m: "Enam",
+          cat: "Angka",
+          ex: "六月 (rokugatsu) — Juni",
+        },
+        {
+          k: "七",
+          r: "しち・なな / shichi, nana",
+          m: "Tujuh",
+          cat: "Angka",
+          ex: "七月 (shichigatsu) — Juli",
+        },
+        {
+          k: "八",
+          r: "はち / hachi",
+          m: "Delapan",
+          cat: "Angka",
+          ex: "八月 (hachigatsu) — Agustus",
+        },
+        {
+          k: "九",
+          r: "く・きゅう / ku, kyū",
+          m: "Sembilan",
+          cat: "Angka",
+          ex: "九時 (kuji) — pukul 9",
+        },
+        {
+          k: "十",
+          r: "じゅう / juu",
+          m: "Sepuluh",
+          cat: "Angka",
+          ex: "十月 (juugatsu) — Oktober",
+        },
+        {
+          k: "百",
+          r: "ひゃく / hyaku",
+          m: "Seratus",
+          cat: "Angka",
+          ex: "百円 (hyakuen) — 100 yen",
+        },
+        {
+          k: "千",
+          r: "せん / sen",
+          m: "Seribu",
+          cat: "Angka",
+          ex: "三千 (sanzen) — tiga ribu",
+        },
+        {
+          k: "万",
+          r: "まん / man",
+          m: "Sepuluh ribu",
+          cat: "Angka",
+          ex: "一万円 (ichiman-en) — 10.000 yen",
+        },
+        // Alam
+        {
+          k: "日",
+          r: "にち・ひ / nichi, hi",
+          m: "Matahari / Hari",
+          cat: "Alam",
+          ex: "日曜日 (nichiyōbi) — Minggu",
+        },
+        {
+          k: "月",
+          r: "つき・げつ / tsuki, getsu",
+          m: "Bulan",
+          cat: "Alam",
+          ex: "月曜日 (getsuyōbi) — Senin",
+        },
+        {
+          k: "火",
+          r: "ひ・か / hi, ka",
+          m: "Api",
+          cat: "Alam",
+          ex: "火曜日 (kayōbi) — Selasa",
+        },
+        {
+          k: "水",
+          r: "みず・すい / mizu, sui",
+          m: "Air",
+          cat: "Alam",
+          ex: "水曜日 (suiyōbi) — Rabu",
+        },
+        {
+          k: "木",
+          r: "き・もく / ki, moku",
+          m: "Kayu / Pohon",
+          cat: "Alam",
+          ex: "木曜日 (mokuyōbi) — Kamis",
+        },
+        {
+          k: "金",
+          r: "かね・きん / kane, kin",
+          m: "Emas / Uang",
+          cat: "Alam",
+          ex: "金曜日 (kin'yōbi) — Jumat",
+        },
+        {
+          k: "土",
+          r: "つち・ど / tsuchi, do",
+          m: "Tanah",
+          cat: "Alam",
+          ex: "土曜日 (doyōbi) — Sabtu",
+        },
+        {
+          k: "山",
+          r: "やま / yama",
+          m: "Gunung",
+          cat: "Alam",
+          ex: "富士山 (Fujisan) — Gunung Fuji",
+        },
+        {
+          k: "川",
+          r: "かわ / kawa",
+          m: "Sungai",
+          cat: "Alam",
+          ex: "川沿い (kawazoi) — tepi sungai",
+        },
+        {
+          k: "田",
+          r: "た・でん / ta, den",
+          m: "Sawah",
+          cat: "Alam",
+          ex: "田んぼ (tanbo) — sawah",
+        },
+        {
+          k: "空",
+          r: "そら・くう / sora, kuu",
+          m: "Langit / Kosong",
+          cat: "Alam",
+          ex: "空港 (kūkō) — bandara",
+        },
+        {
+          k: "花",
+          r: "はな / hana",
+          m: "Bunga",
+          cat: "Alam",
+          ex: "花見 (hanami) — melihat bunga",
+        },
+        {
+          k: "雨",
+          r: "あめ / ame",
+          m: "Hujan",
+          cat: "Alam",
+          ex: "雨天 (uten) — hari hujan",
+        },
+        // Orang
+        {
+          k: "人",
+          r: "ひと・じん / hito, jin",
+          m: "Orang",
+          cat: "Orang",
+          ex: "日本人 (nihonjin) — orang Jepang",
+        },
+        {
+          k: "男",
+          r: "おとこ / otoko",
+          m: "Laki-laki",
+          cat: "Orang",
+          ex: "男性 (dansei) — pria",
+        },
+        {
+          k: "女",
+          r: "おんな / onna",
+          m: "Perempuan",
+          cat: "Orang",
+          ex: "女性 (josei) — wanita",
+        },
+        {
+          k: "子",
+          r: "こ・し / ko, shi",
+          m: "Anak",
+          cat: "Orang",
+          ex: "子供 (kodomo) — anak-anak",
+        },
+        {
+          k: "父",
+          r: "ちち・ふ / chichi, fu",
+          m: "Ayah",
+          cat: "Orang",
+          ex: "お父さん (otōsan) — ayah (sopan)",
+        },
+        {
+          k: "母",
+          r: "はは・ぼ / haha, bo",
+          m: "Ibu",
+          cat: "Orang",
+          ex: "お母さん (okāsan) — ibu (sopan)",
+        },
+        {
+          k: "友",
+          r: "とも / tomo",
+          m: "Teman",
+          cat: "Orang",
+          ex: "友達 (tomodachi) — teman",
+        },
+        {
+          k: "先",
+          r: "さき・せん / saki, sen",
+          m: "Dahulu / Depan",
+          cat: "Orang",
+          ex: "先生 (sensei) — guru",
+        },
+        {
+          k: "生",
+          r: "いき・せい / iki, sei",
+          m: "Hidup / Lahir",
+          cat: "Orang",
+          ex: "学生 (gakusei) — pelajar",
+        },
+        // Tempat
+        {
+          k: "国",
+          r: "くに・こく / kuni, koku",
+          m: "Negara",
+          cat: "Tempat",
+          ex: "外国 (gaikoku) — negara asing",
+        },
+        {
+          k: "学",
+          r: "まな・がく / mana, gaku",
+          m: "Belajar",
+          cat: "Tempat",
+          ex: "学校 (gakkō) — sekolah",
+        },
+        {
+          k: "校",
+          r: "こう / kō",
+          m: "Sekolah",
+          cat: "Tempat",
+          ex: "高校 (kōkō) — SMA",
+        },
+        {
+          k: "家",
+          r: "いえ・か / ie, ka",
+          m: "Rumah",
+          cat: "Tempat",
+          ex: "家族 (kazoku) — keluarga",
+        },
+        {
+          k: "店",
+          r: "みせ・てん / mise, ten",
+          m: "Toko",
+          cat: "Tempat",
+          ex: "本屋 (hon'ya) — toko buku",
+        },
+        {
+          k: "道",
+          r: "みち・どう / michi, dō",
+          m: "Jalan",
+          cat: "Tempat",
+          ex: "道路 (dōro) — jalan raya",
+        },
+        {
+          k: "駅",
+          r: "えき / eki",
+          m: "Stasiun",
+          cat: "Tempat",
+          ex: "東京駅 (Tōkyō-eki) — Stasiun Tokyo",
+        },
+        {
+          k: "車",
+          r: "くるま・しゃ / kuruma, sha",
+          m: "Mobil",
+          cat: "Tempat",
+          ex: "電車 (densha) — kereta listrik",
+        },
+        // Waktu
+        {
+          k: "年",
+          r: "とし・ねん / toshi, nen",
+          m: "Tahun",
+          cat: "Waktu",
+          ex: "今年 (kotoshi) — tahun ini",
+        },
+        {
+          k: "時",
+          r: "とき・じ / toki, ji",
+          m: "Waktu / Jam",
+          cat: "Waktu",
+          ex: "時間 (jikan) — waktu / durasi",
+        },
+        {
+          k: "分",
+          r: "ふん・ぶん / fun, bun",
+          m: "Menit / Bagian",
+          cat: "Waktu",
+          ex: "十分 (juppun) — 10 menit",
+        },
+        {
+          k: "今",
+          r: "いま・こん / ima, kon",
+          m: "Sekarang",
+          cat: "Waktu",
+          ex: "今日 (kyō) — hari ini",
+        },
+        {
+          k: "毎",
+          r: "まい / mai",
+          m: "Setiap",
+          cat: "Waktu",
+          ex: "毎日 (mainichi) — setiap hari",
+        },
+        {
+          k: "週",
+          r: "しゅう / shū",
+          m: "Minggu",
+          cat: "Waktu",
+          ex: "来週 (raishū) — minggu depan",
+        },
+        {
+          k: "午",
+          r: "ご / go",
+          m: "Tengah hari",
+          cat: "Waktu",
+          ex: "午前 (gozen) — pagi / AM",
+        },
+        {
+          k: "前",
+          r: "まえ・ぜん / mae, zen",
+          m: "Depan / Sebelum",
+          cat: "Waktu",
+          ex: "名前 (namae) — nama",
+        },
+        {
+          k: "後",
+          r: "うし・ご / ushi, go",
+          m: "Belakang / Setelah",
+          cat: "Waktu",
+          ex: "午後 (gogo) — sore / PM",
+        },
+        // Kata Sifat
+        {
+          k: "大",
+          r: "おお・だい / ōo, dai",
+          m: "Besar",
+          cat: "Kata Sifat",
+          ex: "大学 (daigaku) — universitas",
+        },
+        {
+          k: "小",
+          r: "ちい・しょう / chii, shō",
+          m: "Kecil",
+          cat: "Kata Sifat",
+          ex: "小学校 (shōgakkō) — SD",
+        },
+        {
+          k: "高",
+          r: "たか・こう / taka, kō",
+          m: "Tinggi / Mahal",
+          cat: "Kata Sifat",
+          ex: "高校 (kōkō) — SMA",
+        },
+        {
+          k: "安",
+          r: "やす・あん / yasu, an",
+          m: "Murah / Aman",
+          cat: "Kata Sifat",
+          ex: "安心 (anshin) — tenang",
+        },
+        {
+          k: "長",
+          r: "なが・ちょう / naga, chō",
+          m: "Panjang",
+          cat: "Kata Sifat",
+          ex: "社長 (shachō) — direktur",
+        },
+        {
+          k: "白",
+          r: "しろ・はく / shiro, haku",
+          m: "Putih",
+          cat: "Kata Sifat",
+          ex: "白紙 (hakushi) — kertas kosong",
+        },
+        {
+          k: "黒",
+          r: "くろ・こく / kuro, koku",
+          m: "Hitam",
+          cat: "Kata Sifat",
+          ex: "黒板 (kokuban) — papan tulis",
+        },
+        {
+          k: "赤",
+          r: "あか / aka",
+          m: "Merah",
+          cat: "Kata Sifat",
+          ex: "赤ちゃん (akachan) — bayi",
+        },
+        {
+          k: "青",
+          r: "あお・せい / ao, sei",
+          m: "Biru / Hijau",
+          cat: "Kata Sifat",
+          ex: "青空 (aozora) — langit biru",
+        },
+        {
+          k: "新",
+          r: "あたら・しん / atara, shin",
+          m: "Baru",
+          cat: "Kata Sifat",
+          ex: "新聞 (shinbun) — koran",
+        },
+        {
+          k: "古",
+          r: "ふる・こ / furu, ko",
+          m: "Lama / Tua",
+          cat: "Kata Sifat",
+          ex: "古い (furui) — tua/lama",
+        },
+        {
+          k: "多",
+          r: "おお・た / ōo, ta",
+          m: "Banyak",
+          cat: "Kata Sifat",
+          ex: "多分 (tabun) — mungkin",
+        },
+        // Lainnya
+        {
+          k: "語",
+          r: "ご / go",
+          m: "Bahasa",
+          cat: "Lainnya",
+          ex: "日本語 (nihongo) — bahasa Jepang",
+        },
+        {
+          k: "話",
+          r: "はな・わ / hana, wa",
+          m: "Bicara / Cerita",
+          cat: "Lainnya",
+          ex: "電話 (denwa) — telepon",
+        },
+        {
+          k: "読",
+          r: "よ・どく / yo, doku",
+          m: "Membaca",
+          cat: "Lainnya",
+          ex: "読書 (dokusho) — membaca buku",
+        },
+        {
+          k: "書",
+          r: "か・しょ / ka, sho",
+          m: "Menulis",
+          cat: "Lainnya",
+          ex: "書道 (shodō) — kaligrafi Jepang",
+        },
+        {
+          k: "食",
+          r: "た・しょく / ta, shoku",
+          m: "Makan",
+          cat: "Lainnya",
+          ex: "食堂 (shokudō) — kafetaria",
+        },
+        {
+          k: "飲",
+          r: "の・いん / no, in",
+          m: "Minum",
+          cat: "Lainnya",
+          ex: "飲み物 (nomimono) — minuman",
+        },
+        {
+          k: "見",
+          r: "み・けん / mi, ken",
+          m: "Melihat",
+          cat: "Lainnya",
+          ex: "見学 (kengaku) — kunjungan belajar",
+        },
+        {
+          k: "聞",
+          r: "き・ぶん / ki, bun",
+          m: "Mendengar / Bertanya",
+          cat: "Lainnya",
+          ex: "新聞 (shinbun) — koran",
+        },
+        {
+          k: "行",
+          r: "い・こう / i, kō",
+          m: "Pergi",
+          cat: "Lainnya",
+          ex: "旅行 (ryokō) — perjalanan",
+        },
+        {
+          k: "来",
+          r: "く・らい / ku, rai",
+          m: "Datang",
+          cat: "Lainnya",
+          ex: "来週 (raishū) — minggu depan",
+        },
+        {
+          k: "出",
+          r: "で・しゅつ / de, shutsu",
+          m: "Keluar",
+          cat: "Lainnya",
+          ex: "出口 (deguchi) — pintu keluar",
+        },
+        {
+          k: "入",
+          r: "はい・にゅう / hai, nyū",
+          m: "Masuk",
+          cat: "Lainnya",
+          ex: "入口 (iriguchi) — pintu masuk",
+        },
+        {
+          k: "電",
+          r: "でん / den",
+          m: "Listrik",
+          cat: "Lainnya",
+          ex: "電気 (denki) — listrik",
+        },
+        {
+          k: "気",
+          r: "き / ki",
+          m: "Jiwa / Perasaan",
+          cat: "Lainnya",
+          ex: "元気 (genki) — sehat / bersemangat",
+        },
+        {
+          k: "好",
+          r: "す・こう / su, kō",
+          m: "Suka",
+          cat: "Lainnya",
+          ex: "好き (suki) — suka",
+        },
+        {
+          k: "上",
+          r: "うえ・じょう / ue, jō",
+          m: "Atas",
+          cat: "Lainnya",
+          ex: "上手 (jōzu) — mahir",
+        },
+        {
+          k: "下",
+          r: "した・か / shita, ka",
+          m: "Bawah",
+          cat: "Lainnya",
+          ex: "地下 (chika) — bawah tanah",
+        },
+        {
+          k: "右",
+          r: "みぎ・う / migi, u",
+          m: "Kanan",
+          cat: "Lainnya",
+          ex: "右側 (migigawa) — sisi kanan",
+        },
+        {
+          k: "左",
+          r: "ひだり・さ / hidari, sa",
+          m: "Kiri",
+          cat: "Lainnya",
+          ex: "左折 (sasetsu) — belok kiri",
+        },
+        {
+          k: "中",
+          r: "なか・ちゅう / naka, chū",
+          m: "Tengah / Dalam",
+          cat: "Lainnya",
+          ex: "中心 (chūshin) — pusat",
+        },
+      ];
+
+      // ── State ──
+      let state = {
+        mastered: [],
+        quizScore: 0,
+        quizTotal: 0,
+        quizStreak: 0,
+        bestStreak: 0,
+      };
+
+      function loadState() {
+        const saved = localStorage.getItem("kanjiN5State");
+        if (saved) state = { ...state, ...JSON.parse(saved) };
+      }
+      function saveState() {
+        localStorage.setItem("kanjiN5State", JSON.stringify(state));
+        updateHeader();
+      }
+
+      function isMastered(k) {
+        return state.mastered.includes(k);
+      }
+
+      function updateHeader() {
+        document.getElementById("hdr-total").textContent = KANJI_DATA.length;
+        document.getElementById("hdr-mastered").textContent =
+          state.mastered.length;
+      }
+
+      // ── Tabs ──
+      document.querySelectorAll(".tab").forEach((tab) => {
+        tab.addEventListener("click", () => {
+          document
+            .querySelectorAll(".tab")
+            .forEach((t) => t.classList.remove("active"));
+          document
+            .querySelectorAll(".section")
+            .forEach((s) => s.classList.remove("active"));
+          tab.classList.add("active");
+          document
+            .getElementById("sec-" + tab.dataset.tab)
+            .classList.add("active");
+          if (tab.dataset.tab === "list") renderList();
+          if (tab.dataset.tab === "progress") renderProgress();
+        });
+      });
+
+      // ── FLASHCARD ──
+      let fcFiltered = [...KANJI_DATA];
+      let fcIndex = 0;
+      let fcCat = "all";
+
+      function setupFcFilters() {
+        document.querySelectorAll("#fc-filters .filter-btn").forEach((btn) => {
+          btn.addEventListener("click", () => {
+            document
+              .querySelectorAll("#fc-filters .filter-btn")
+              .forEach((b) => b.classList.remove("active"));
+            btn.classList.add("active");
+            fcCat = btn.dataset.cat;
+            fcFiltered =
+              fcCat === "all"
+                ? [...KANJI_DATA]
+                : KANJI_DATA.filter((k) => k.cat === fcCat);
+            fcIndex = 0;
+            showCard();
+          });
+        });
+      }
+
+      function showCard() {
+        const card = fcFiltered[fcIndex];
+        if (!card) return;
+        document.getElementById("card-inner").classList.remove("flipped");
+        document.getElementById("cf-kanji").textContent = card.k;
+        document.getElementById("cf-cat").textContent = card.cat;
+        document.getElementById("cb-cat").textContent = card.cat;
+        document.getElementById("cb-reading").textContent = card.r;
+        document.getElementById("cb-meaning").textContent = card.m;
+        const ex = card.ex
+          ? `<span>${card.ex.split(" (")[0]}</span> ${card.ex.includes("(") ? "(" + card.ex.split("(")[1] : ""}`
+          : "";
+        document.getElementById("cb-examples").innerHTML = ex;
+        document.getElementById("fc-counter").textContent =
+          `${fcIndex + 1} / ${fcFiltered.length}`;
+        document.getElementById("fc-idx").textContent = fcIndex + 1;
+        const pct = (((fcIndex + 1) / fcFiltered.length) * 100).toFixed(0);
+        document.getElementById("fc-progress").style.width = pct + "%";
+      }
+
+      function flipCard() {
+        document.getElementById("card-inner").classList.toggle("flipped");
+      }
+
+      function nextCard() {
+        fcIndex = (fcIndex + 1) % fcFiltered.length;
+        showCard();
+      }
+      function prevCard() {
+        fcIndex = (fcIndex - 1 + fcFiltered.length) % fcFiltered.length;
+        showCard();
+      }
+
+      function markMastered() {
+        const card = fcFiltered[fcIndex];
+        if (!isMastered(card.k)) {
+          state.mastered.push(card.k);
+          saveState();
+        }
+        nextCard();
+      }
+
+      // swipe support
+      let touchStartX = 0;
+      document
+        .getElementById("card-scene")
+        .addEventListener("touchstart", (e) => {
+          touchStartX = e.touches[0].clientX;
+        });
+      document
+        .getElementById("card-scene")
+        .addEventListener("touchend", (e) => {
+          const dx = e.changedTouches[0].clientX - touchStartX;
+          if (Math.abs(dx) > 50) {
+            dx > 0 ? prevCard() : nextCard();
+          }
+        });
+
+      // ── DAFTAR ──
+      let listCat = "all";
+      function setupListFilters() {
+        document
+          .querySelectorAll("#list-filters .filter-btn")
+          .forEach((btn) => {
+            btn.addEventListener("click", () => {
+              document
+                .querySelectorAll("#list-filters .filter-btn")
+                .forEach((b) => b.classList.remove("active"));
+              btn.classList.add("active");
+              listCat = btn.dataset.cat;
+              renderList();
+            });
+          });
+      }
+
+      function renderList() {
+        const q = document.getElementById("search-input").value.toLowerCase();
+        let data = KANJI_DATA;
+        if (listCat === "mastered") data = data.filter((k) => isMastered(k.k));
+        else if (listCat !== "all")
+          data = data.filter((k) => k.cat === listCat);
+        if (q)
+          data = data.filter(
+            (k) =>
+              k.k.includes(q) ||
+              k.m.toLowerCase().includes(q) ||
+              k.r.toLowerCase().includes(q),
+          );
+
+        const grid = document.getElementById("kanji-grid");
+        if (!data.length) {
+          grid.innerHTML =
+            '<div class="empty-state"><p>Tidak ada kanji yang sesuai</p></div>';
+          return;
+        }
+        grid.innerHTML = data
+          .map(
+            (k) => `
+    <div class="kanji-card ${isMastered(k.k) ? "mastered" : ""}" onclick="toggleMastered('${k.k}')">
+      ${isMastered(k.k) ? '<div class="mastered-dot"></div>' : ""}
+      <div class="kj">${k.k}</div>
+      <div class="km">${k.m}</div>
+      <div class="kr">${k.r.split(" / ")[0]}</div>
+    </div>
+  `,
+          )
+          .join("");
+      }
+
+      function toggleMastered(kanji) {
+        if (isMastered(kanji))
+          state.mastered = state.mastered.filter((k) => k !== kanji);
+        else state.mastered.push(kanji);
+        saveState();
+        renderList();
+      }
+
+      // ── KUIS ──
+      let qCurrent = null;
+      let qOptions = [];
+      let qAnswered = false;
+
+      function getRandomItems(arr, n, exclude = []) {
+        const pool = arr.filter((k) => !exclude.includes(k));
+        const shuffled = [...pool].sort(() => Math.random() - 0.5);
+        return shuffled.slice(0, n);
+      }
+
+      function nextQuestion() {
+        qAnswered = false;
+        document.getElementById("q-feedback").textContent = "";
+        document.getElementById("q-next-btn").style.display = "none";
+
+        const pool = KANJI_DATA;
+        qCurrent = pool[Math.floor(Math.random() * pool.length)];
+
+        const wrongs = getRandomItems(pool, 3, [qCurrent]).map((k) => k.m);
+        const allOpts = [...wrongs, qCurrent.m].sort(() => Math.random() - 0.5);
+
+        document.getElementById("q-kanji").textContent = qCurrent.k;
+        document.getElementById("q-type").textContent = "Pilih arti yang benar";
+
+        const container = document.getElementById("q-options");
+        container.innerHTML = allOpts
+          .map(
+            (opt) => `
+    <button class="quiz-option" onclick="answerQuiz('${opt.replace(/'/g, "\\'")}')">${opt}</button>
+  `,
+          )
+          .join("");
+      }
+
+      function answerQuiz(answer) {
+        if (qAnswered) return;
+        qAnswered = true;
+        state.quizTotal++;
+        const correct = answer === qCurrent.m;
+        if (correct) {
+          state.quizScore++;
+          state.quizStreak++;
+          if (state.quizStreak > state.bestStreak)
+            state.bestStreak = state.quizStreak;
+        } else {
+          state.quizStreak = 0;
+        }
+        saveState();
+
+        document.querySelectorAll(".quiz-option").forEach((btn) => {
+          btn.disabled = true;
+          if (btn.textContent === qCurrent.m) btn.classList.add("correct");
+          else if (btn.textContent === answer && !correct)
+            btn.classList.add("wrong");
+        });
+
+        const fb = document.getElementById("q-feedback");
+        fb.textContent = correct
+          ? "✓ Benar!"
+          : `✗ Salah — jawabannya: ${qCurrent.m}`;
+        fb.className = "quiz-feedback " + (correct ? "ok" : "err");
+
+        document.getElementById("q-score").textContent = state.quizScore;
+        document.getElementById("q-total").textContent = state.quizTotal;
+        document.getElementById("q-streak").textContent =
+          `🔥 ${state.quizStreak} streak`;
+        document.getElementById("q-next-btn").style.display = "block";
+      }
+
+      function resetQuiz() {
+        state.quizScore = 0;
+        state.quizTotal = 0;
+        state.quizStreak = 0;
+        saveState();
+        document.getElementById("q-score").textContent = "0";
+        document.getElementById("q-total").textContent = "0";
+        document.getElementById("q-streak").textContent = "🔥 0 streak";
+        document.getElementById("q-feedback").textContent = "";
+        document.getElementById("q-next-btn").style.display = "none";
+        nextQuestion();
+      }
+
+      // ── PROGRESS ──
+      function renderProgress() {
+        const total = KANJI_DATA.length;
+        const m = state.mastered.length;
+        document.getElementById("ps-total").textContent = total;
+        document.getElementById("ps-mastered").textContent = m;
+        document.getElementById("ps-pct").textContent =
+          Math.round((m / total) * 100) + "%";
+        document.getElementById("ps-streak").textContent = state.bestStreak;
+
+        const cats = [...new Set(KANJI_DATA.map((k) => k.cat))];
+        const container = document.getElementById("cat-progress");
+        container.innerHTML = cats
+          .map((cat) => {
+            const catKanji = KANJI_DATA.filter((k) => k.cat === cat);
+            const masteredInCat = catKanji.filter((k) =>
+              isMastered(k.k),
+            ).length;
+            const pct = Math.round((masteredInCat / catKanji.length) * 100);
+            return `<div class="cat-row">
+      <div class="cat-name">${cat}</div>
+      <div class="cat-bar-wrap"><div class="cat-bar" style="width:${pct}%"></div></div>
+      <div class="cat-pct">${masteredInCat}/${catKanji.length}</div>
+    </div>`;
+          })
+          .join("");
+      }
+
+      function confirmReset() {
+        if (confirm("Reset semua progres? Ini tidak bisa dibatalkan.")) {
+          state.mastered = [];
+          state.bestStreak = 0;
+          state.quizScore = 0;
+          state.quizTotal = 0;
+          state.quizStreak = 0;
+          saveState();
+          renderProgress();
+          renderList();
+        }
+      }
+
+      // ── INIT ──
+      loadState();
+      updateHeader();
+      setupFcFilters();
+      setupListFilters();
+      showCard();
+      nextQuestion();
+      document.getElementById("q-score").textContent = state.quizScore;
+      document.getElementById("q-total").textContent = state.quizTotal;
+      document.getElementById("q-streak").textContent =
+        `🔥 ${state.quizStreak} streak`;
+    </script>
+  </body>
+</html>
